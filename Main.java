@@ -16,7 +16,6 @@ public class Main {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
             System.out.println("Connected to the database!");
              try (Statement statement = connection.createStatement()) {
-                // Retrieve data from the table
                 String retrieveDataSQL = "SELECT * FROM staff"; 
                 try (ResultSet resultSet = statement.executeQuery(retrieveDataSQL)) {
                     System.out.println("Retrieving data from the table:");
