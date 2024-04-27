@@ -1,1 +1,1 @@
-SELECT * FROM staff;
+SELECT s.first_name, s.last_name, a.address, a.district, c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active FROM staff s JOIN address a ON s.address_id = a.address_id JOIN city c ON a.city_id = c.city_id;
