@@ -1,5 +1,7 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,6 +16,7 @@ public class StaffGUI extends JFrame {
 
     private JTable staffTable;
     private JTextField filterField;
+    private JTable filmTable;
 
     public StaffGUI() {
         setTitle("Staff Management");
@@ -63,17 +66,39 @@ public class StaffGUI extends JFrame {
         staffPanel.add(tablePanel, BorderLayout.CENTER);
 
         tabbedPane.addTab("Staff", staffPanel);
+
+        // Film tab
+        JPanel filmPanel = new JPanel();
+        filmPanel.setLayout(new BorderLayout());
+        filmPanel.setBackground(new Color(128, 128, 128)); // Gray
+        filmPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Add padding
+        tabbedPane.addTab("Films", filmPanel);
+
+        // Add tabbed pane to the frame
         add(tabbedPane);
+
+        // Add action listener to the Films tab
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if (tabbedPane.getSelectedIndex() == 1) { // If Films tab is selected
+                    showAddFilmPopup(); // Show the Add Film popup
+                }
+            }
+        });
+
+        // Setup film table initially
+        setupFilmTable(filmPanel);
     }
 
     private void populateTable() {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
              Statement statement = connection.createStatement()) {
             String query = "SELECT s.first_name, s.last_name, a.address, a.district, " +
-                "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
-                "FROM staff s " +
-                "JOIN address a ON s.address_id = a.address_id " +
-                "JOIN city c ON a.city_id = c.city_id";
+                    "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
+                    "FROM staff s " +
+                    "JOIN address a ON s.address_id = a.address_id " +
+                    "JOIN city c ON a.city_id = c.city_id";
             ResultSet rs = statement.executeQuery(query);
             DefaultTableModel tableModel = new DefaultTableModel();
             ResultSetMetaData metaData = rs.getMetaData();
@@ -97,18 +122,18 @@ public class StaffGUI extends JFrame {
     private void updateTableWithFilter() {
         String filterText = filterField.getText();
         if (filterText.isEmpty()) {
-            filterText = "%"; 
+            filterText = "%";
         } else {
-            filterText = "%" + filterText + "%"; 
+            filterText = "%" + filterText + "%";
         }
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
              PreparedStatement ps = connection.prepareStatement("SELECT s.first_name, s.last_name, a.address, a.district, " +
-                    "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
-                    "FROM staff s " +
-                    "JOIN address a ON s.address_id = a.address_id " +
-                    "JOIN city c ON a.city_id = c.city_id " +
-                    "WHERE s.first_name LIKE ? OR s.last_name LIKE ? OR a.address LIKE ?")) {
+                     "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
+                     "FROM staff s " +
+                     "JOIN address a ON s.address_id = a.address_id " +
+                     "JOIN city c ON a.city_id = c.city_id " +
+                     "WHERE s.first_name LIKE ? OR s.last_name LIKE ? OR a.address LIKE ?")) {
             ps.setString(1, filterText);
             ps.setString(2, filterText);
             ps.setString(3, filterText);
@@ -129,6 +154,32 @@ public class StaffGUI extends JFrame {
             ex.printStackTrace();
         }
     }
+
+    private void showAddFilmPopup() {
+        // Show the Add Film popup
+        AddFilmPopup popup = new AddFilmPopup(this); // Pass the frame as owner
+        popup.setVisible(true);
+        // No need to refresh film table here
+    }
+
+
+    private void setupFilmTable(JPanel filmPanel) {
+        DefaultTableModel filmTableModel = Films.getFilmTableModel();
+        filmTable = new JTable(filmTableModel);
+
+        // Add the film table to a scroll pane and then add the scroll pane to the film panel
+        JScrollPane scrollPane = new JScrollPane(filmTable);
+        filmPanel.add(scrollPane, BorderLayout.CENTER);
+    }
+
+
+    public void refreshFilmTable() {
+        DefaultTableModel filmTableModel = Films.getFilmTableModel(); // Retrieve updated film data
+        if (filmTable != null && filmTableModel != null) {
+            filmTable.setModel(filmTableModel); // Set the updated model to the film table
+        }
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
