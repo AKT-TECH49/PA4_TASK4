@@ -1,6 +1,7 @@
-import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Films {
 
@@ -54,4 +55,71 @@ public class Films {
             e.printStackTrace();
         }
     }
+
+
+    public static DefaultTableModel searchFilms(String titleKeyword, String category, String language, int releaseYear) {
+    DefaultTableModel tableModel = new DefaultTableModel();
+    try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT f.*, l.name AS language_name ")
+                    .append("FROM film f ")
+                    .append("JOIN language l ON f.language_id = l.language_id ")
+                    .append("JOIN film_category fc ON f.film_id = fc.film_id ")
+                    .append("JOIN category c ON fc.category_id = c.category_id ")
+                    .append("WHERE 1 = 1 "); // Placeholder for dynamic conditions
+        
+        List<Object> parameters = new ArrayList<>(); // List to hold query parameters
+        
+        if (!titleKeyword.isEmpty()) {
+            queryBuilder.append("AND f.title LIKE ? ");
+            parameters.add("%" + titleKeyword + "%");
+        }
+        if (!category.isEmpty()) {
+            queryBuilder.append("AND c.name = ? ");
+            parameters.add(category);
+        }
+        if (!language.isEmpty()) {
+            queryBuilder.append("AND l.name = ? ");
+            parameters.add(language);
+        }
+        if (releaseYear != 0) {
+            queryBuilder.append("AND f.release_year = ? ");
+            parameters.add(releaseYear);
+        }
+        
+        PreparedStatement preparedStatement = connection.prepareStatement(queryBuilder.toString());
+        
+        // Set parameters for the prepared statement
+        for (int i = 0; i < parameters.size(); i++) {
+            preparedStatement.setObject(i + 1, parameters.get(i));
+        }
+        
+        ResultSet rs = preparedStatement.executeQuery();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            tableModel.addColumn(metaData.getColumnLabel(i));
+        }
+        while (rs.next()) {
+            Object[] row = new Object[columnCount];
+            for (int i = 0; i < columnCount; i++) {
+                row[i] = rs.getObject(i + 1);
+            }
+            tableModel.addRow(row);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return tableModel;
+}
+
+    
+
+
+
+
+
+
+
+
 }
