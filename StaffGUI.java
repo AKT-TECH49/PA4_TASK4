@@ -84,6 +84,8 @@ public class StaffGUI extends JFrame {
          reportPanel.setBackground(new Color(staffPanel.getBackground().getRed(), staffPanel.getBackground().getGreen(), staffPanel.getBackground().getBlue()));
          setupReportTab(reportPanel);
 
+         JPanel notificationsPanel = new Notifications(this).getPanel();
+         tabbedPane.addTab("Notifications", notificationsPanel);
 
         // Add tabbed pane to the frame
         add(tabbedPane);

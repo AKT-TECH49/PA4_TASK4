@@ -1,1 +1,4 @@
-SELECT s.first_name, s.last_name, a.address, a.district, c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active FROM staff s JOIN address a ON s.address_id = a.address_id JOIN city c ON a.city_id = c.city_id;
+SELECT c.first_name, c.last_name, c.email, a.address_id, ci.city, s.store_id
+                FROM customer c 
+                JOIN city ci ON a.city_id = ci.city_id 
+                JOIN store s ON a.store_id = s.store_idz
