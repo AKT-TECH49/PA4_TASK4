@@ -84,7 +84,9 @@ public class StaffGUI extends JFrame {
          reportPanel.setBackground(new Color(staffPanel.getBackground().getRed(), staffPanel.getBackground().getGreen(), staffPanel.getBackground().getBlue()));
          setupReportTab(reportPanel);
 
-         JPanel notificationsPanel = new Notifications(this).getPanel();
+         // Notifications tab
+         JPanel notificationsPanel = new JPanel(new BorderLayout());
+         setupCustomerTable(notificationsPanel);
          tabbedPane.addTab("Notifications", notificationsPanel);
 
         // Add tabbed pane to the frame
@@ -289,6 +291,18 @@ public class StaffGUI extends JFrame {
         reportPanel.setLayout(new BorderLayout());
         reportPanel.add(scrollPane, BorderLayout.CENTER);
     }
+
+    private void setupCustomerTable(JPanel notificationsPanel) {
+        // Create the Notifications object passing the current StaffGUI instance
+        Notifications notifications = new Notifications(this);
+
+        // Get the panel containing the customer table from the Notifications object
+        JPanel customerPanel = notifications.getPanel();
+
+        // Add the customer table panel to the notifications panel
+        notificationsPanel.add(customerPanel, BorderLayout.CENTER);
+    }
+
     
 
  

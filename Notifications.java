@@ -36,6 +36,8 @@ public class Notifications {
                     "FROM customer c";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
+            
+            // Create table model
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Customer ID");
             tableModel.addColumn("Store ID");
@@ -46,6 +48,8 @@ public class Notifications {
             tableModel.addColumn("Active");
             tableModel.addColumn("Create Date");
             tableModel.addColumn("Last Update");
+            
+            // Add rows to table model
             while (resultSet.next()) {
                 Object[] rowData = new Object[9];
                 rowData[0] = resultSet.getInt("customer_id");
@@ -59,9 +63,44 @@ public class Notifications {
                 rowData[8] = resultSet.getTimestamp("last_update");
                 tableModel.addRow(rowData);
             }
+            
+            // Set the table model
             clientsTable.setModel(tableModel);
+            
+            // Add buttons panel to each row
+            for (int i = 0; i < clientsTable.getRowCount(); i++) {
+                JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+                buttonsPanel.setBackground(new Color(230, 230, 230)); // Grey-blue background color
+                
+                JButton addButton = new JButton("Add");
+                JButton createButton = new JButton("Create");
+                JButton updateButton = new JButton("Update");
+                JButton refreshButton = new JButton("Refresh");
+                JButton formerClientsButton = new JButton("Former Clients");
+                JButton activeClientsButton = new JButton("Active Clients");
+                
+                // Style buttons
+                addButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                createButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                updateButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                refreshButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                formerClientsButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                activeClientsButton.setBackground(new Color(192, 192, 192)); // Grey-blue button color
+                
+                // Add buttons to the panel
+                buttonsPanel.add(addButton);
+                buttonsPanel.add(createButton);
+                buttonsPanel.add(updateButton);
+                buttonsPanel.add(refreshButton);
+                buttonsPanel.add(formerClientsButton);
+                buttonsPanel.add(activeClientsButton);
+                
+                // Add buttons panel to the table
+                clientsTable.add(buttonsPanel);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    
 }
