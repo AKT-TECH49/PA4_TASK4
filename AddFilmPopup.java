@@ -6,11 +6,11 @@ import java.sql.*;
 
 public class AddFilmPopup extends JDialog {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "amantle29";
+    private static final String PASSWORD = "Ihavepassed110!";
 
-    private StaffGUI owner;
+    private MainGUI owner;
 
     private JTextField titleField;
     private JTextArea descriptionArea;
@@ -23,7 +23,7 @@ public class AddFilmPopup extends JDialog {
     private JComboBox<String> ratingComboBox;
     private JTextField specialFeaturesField;
 
-    public AddFilmPopup(StaffGUI owner) {
+    public AddFilmPopup(MainGUI owner) {
         super(owner, "Add New Film", true);
         this.owner = owner;
         setSize(400, 400);
@@ -155,8 +155,8 @@ public class AddFilmPopup extends JDialog {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            StaffGUI staffGUI = new StaffGUI(); // Create an instance of StaffGUI
-            AddFilmPopup popup = new AddFilmPopup(staffGUI); // Pass the instance of StaffGUI as owner
+            MainGUI MainGUI = new MainGUI(); // Create an instance of MainGUI
+            AddFilmPopup popup = new AddFilmPopup(MainGUI); // Pass the instance of MainGUI as owner
             popup.setVisible(true);
         });
     }

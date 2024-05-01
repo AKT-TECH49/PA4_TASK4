@@ -8,11 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-public class StaffGUI extends JFrame {
+public class MainGUI extends JFrame {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "amantle29";
+    private static final String PASSWORD = "Ihavepassed110!";
 
     private JTable staffTable;
     private JTextField filterField;
@@ -22,7 +22,7 @@ public class StaffGUI extends JFrame {
     private JTextField activeField; // Declare as instance field
 
 
-    public StaffGUI() {
+    public MainGUI() {
         setTitle("Database Management");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -337,7 +337,7 @@ public class StaffGUI extends JFrame {
     }
 
     private void setupCustomerTable(JPanel notificationsPanel) {
-        // Create the Notifications object passing the current StaffGUI instance
+        // Create the Notifications object passing the current MainGUI instance
         Notifications notifications = new Notifications(this);
 
         // Get the panel containing the customer table from the Notifications object
@@ -352,8 +352,8 @@ public class StaffGUI extends JFrame {
  
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            StaffGUI staffGUI = new StaffGUI();
-            staffGUI.setVisible(true);
+            MainGUI MainGUI = new MainGUI();
+            MainGUI.setVisible(true);
         });
     }
 }

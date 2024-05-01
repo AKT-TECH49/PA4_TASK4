@@ -1,15 +1,15 @@
 public class Main {
   
-    static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
+    static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
     static final String USERNAME = "root";
-    static final String PASSWORD = "amantle29";
+    static final String PASSWORD = "Ihavepassed110!";
 
     
     public static void main(String[] args) {
         
-        StaffGUI staffGUI = new StaffGUI();
+        MainGUI MainGUI = new MainGUI();
         javax.swing.SwingUtilities.invokeLater(() -> {
-            staffGUI.setVisible(true);
+            MainGUI.setVisible(true);
         });
        
     }

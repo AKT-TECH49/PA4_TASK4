@@ -5,9 +5,9 @@ import java.util.List;
 
 public class Films {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "amantle29";
+    private static final String PASSWORD = "Ihavepassed110!";
 
     public static DefaultTableModel getFilmTableModel() {
         DefaultTableModel tableModel = new DefaultTableModel();
