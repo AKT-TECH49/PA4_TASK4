@@ -17,6 +17,9 @@ public class StaffGUI extends JFrame {
     private JTable staffTable;
     private JTextField filterField;
     private JTable filmTable;
+    private JTable clientsTable;
+    private JTextField storeIdField; // Declare as instance field
+    private JTextField activeField; // Declare as instance field
 
 
     public StaffGUI() {
@@ -39,19 +42,41 @@ public class StaffGUI extends JFrame {
         JPanel filterPanel = new JPanel();
         filterPanel.setBackground(new Color(176, 226, 255)); // Light Blue
         JLabel filterLabel = new JLabel("Filter:");
-        filterLabel.setForeground(Color.white); // White text
+        filterLabel.setForeground(Color.black); // White text
         filterField = new JTextField(20);
+        storeIdField = new JTextField(10);
+        JLabel storeIdLabel = new JLabel("Store ID:");
+        activeField = new JTextField(10);
+        JLabel activeLabel = new JLabel("Active:");
         JButton filterButton = new JButton("Filter");
+        JButton clearFilterButton = new JButton("Clear Filter");
+
         filterButton.setBackground(Color.white); // White button background
         filterButton.setForeground(new Color(192, 192, 192)); // Silver
         filterPanel.add(filterLabel);
         filterPanel.add(filterField);
+        filterPanel.add(storeIdLabel);
+        filterPanel.add(storeIdField);
+        filterPanel.add(activeLabel);
+        filterPanel.add(activeField);
         filterPanel.add(filterButton);
-
         filterButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 updateTableWithFilter();
+            }
+        });
+
+        clearFilterButton.setBackground(Color.white); // White button background
+        clearFilterButton.setForeground(new Color(192, 192, 192)); // Silver
+        filterPanel.add(clearFilterButton);
+        clearFilterButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filterField.setText(""); // Clear the filter text field
+                storeIdField.setText(""); // Clear the store ID field
+                activeField.setText(""); // Clear the active field
+                updateTableWithFilter(); // Update the table with default data
             }
         });
 
@@ -78,16 +103,21 @@ public class StaffGUI extends JFrame {
 
 
         //tab for report :
-         // Add Report tab
-         JPanel reportPanel = new JPanel();
-         tabbedPane.addTab("Report", reportPanel); // Add Report tab
-         reportPanel.setBackground(new Color(staffPanel.getBackground().getRed(), staffPanel.getBackground().getGreen(), staffPanel.getBackground().getBlue()));
-         setupReportTab(reportPanel);
+        // Add Report tab
+        JPanel reportPanel = new JPanel();
+        tabbedPane.addTab("Report", reportPanel); // Add Report tab
+        reportPanel.setBackground(new Color(staffPanel.getBackground().getRed(), staffPanel.getBackground().getGreen(), staffPanel.getBackground().getBlue()));
+        setupReportTab(reportPanel);
 
-         // Notifications tab
-         JPanel notificationsPanel = new JPanel(new BorderLayout());
-         setupCustomerTable(notificationsPanel);
-         tabbedPane.addTab("Notifications", notificationsPanel);
+        // Notifications tab
+        JPanel notificationsPanel = new JPanel(new BorderLayout());
+        setupCustomerTable(notificationsPanel);
+        tabbedPane.addTab("Notifications", notificationsPanel);
+
+
+        clientsTable = new JTable();
+        scrollPane = new JScrollPane(clientsTable);
+        scrollPane.setPreferredSize(new Dimension(600, 150));
 
         // Add tabbed pane to the frame
         add(tabbedPane);
@@ -143,34 +173,48 @@ public class StaffGUI extends JFrame {
         } else {
             filterText = "%" + filterText + "%";
         }
-
+    
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             PreparedStatement ps = connection.prepareStatement("SELECT s.first_name, s.last_name, a.address, a.district, " +
-                     "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
-                     "FROM staff s " +
-                     "JOIN address a ON s.address_id = a.address_id " +
-                     "JOIN city c ON a.city_id = c.city_id " +
-                     "WHERE s.first_name LIKE ? OR s.last_name LIKE ? OR a.address LIKE ?")) {
-            ps.setString(1, filterText);
-            ps.setString(2, filterText);
-            ps.setString(3, filterText);
+     PreparedStatement ps = connection.prepareStatement("SELECT s.first_name, s.last_name, a.address, a.district, " +
+             "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
+             "FROM staff s " +
+             "JOIN address a ON s.address_id = a.address_id " +
+             "JOIN city c ON a.city_id = c.city_id " +
+             "WHERE (s.first_name LIKE ? OR s.last_name LIKE ? OR a.address LIKE ? OR a.district LIKE ? OR " +
+             "c.city LIKE ? OR a.postal_code LIKE ? OR a.phone LIKE ? OR CAST(s.store_id AS CHAR) LIKE ? OR s.active LIKE ?) " +
+             "AND (s.store_id LIKE ? AND s.active LIKE ?)")) {
+    ps.setString(1, filterText);
+    ps.setString(2, filterText);
+    ps.setString(3, filterText);
+    ps.setString(4, filterText);
+    ps.setString(5, filterText);
+    ps.setString(6, filterText);
+    ps.setString(7, filterText);
+    ps.setString(8, filterText);
+    ps.setString(9, filterText);
+    ps.setString(10, "%" + storeIdField.getText() + "%"); // Store ID
+    ps.setString(11, "%" + activeField.getText() + "%"); // Active
 
-            ResultSet rs = ps.executeQuery();
-            DefaultTableModel tableModel = (DefaultTableModel) staffTable.getModel();
-            tableModel.setRowCount(0); // clear existing data
+    ResultSet rs = ps.executeQuery();
+    DefaultTableModel tableModel = (DefaultTableModel) staffTable.getModel();
+    tableModel.setRowCount(0); // clear existing data
 
-            int columnCount = rs.getMetaData().getColumnCount();
-            while (rs.next()) {
-                Object[] row = new Object[columnCount];
-                for (int i = 0; i < columnCount; i++) {
-                    row[i] = rs.getObject(i + 1);
-                }
-                tableModel.addRow(row);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+    int columnCount = rs.getMetaData().getColumnCount();
+    while (rs.next()) {
+        Object[] row = new Object[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            row[i] = rs.getObject(i + 1);
         }
+        tableModel.addRow(row);
     }
+} catch (SQLException ex) {
+    ex.printStackTrace();
+}
+}
+
+
+
+
 
     private void showAddFilmPopup() {
         if (filmTable.getModel().getRowCount() == 0) { // Check if film table is empty

@@ -41,9 +41,4 @@ public class ReportGenerator {
         }
         return tableModel;
     }
-
-    public static void main(String[] args) {
-        DefaultTableModel reportTableModel = generateReport();
-        // Display or use the report table model as needed
-    }
 }
