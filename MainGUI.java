@@ -135,34 +135,43 @@ public class MainGUI extends JFrame {
 
     // Method to populate staff table
     private void populateTable() {
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-            Statement statement = connection.createStatement()) {
-            String query = "SELECT s.first_name, s.last_name, a.address, a.district, " +
-                    "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
-                    "FROM staff s " +
-                    "JOIN address a ON s.address_id = a.address_id " +
-                    "JOIN city c ON a.city_id = c.city_id";
-
-            ResultSet rs = statement.executeQuery(query);
-            DefaultTableModel tableModel = new DefaultTableModel();
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            for (int i = 1; i <= columnCount; i++) {
-                tableModel.addColumn(metaData.getColumnLabel(i));
-            }
-
-            while (rs.next()) {
-                Object[] row = new Object[columnCount];
-
-                for (int i = 0; i < columnCount; i++) {
-                    row[i] = rs.getObject(i + 1);
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+            connection.setAutoCommit(false); // Start transaction
+            
+            try (Statement statement = connection.createStatement()) {
+                String query = "SELECT s.first_name, s.last_name, a.address, a.district, " +
+                        "c.city AS city_name, a.postal_code, a.phone, s.store_id, s.active " +
+                        "FROM staff s " +
+                        "JOIN address a ON s.address_id = a.address_id " +
+                        "JOIN city c ON a.city_id = c.city_id";
+    
+                ResultSet rs = statement.executeQuery(query);
+                DefaultTableModel tableModel = new DefaultTableModel();
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+    
+                for (int i = 1; i <= columnCount; i++) {
+                    tableModel.addColumn(metaData.getColumnLabel(i));
                 }
-
-                tableModel.addRow(row);
+    
+                while (rs.next()) {
+                    Object[] row = new Object[columnCount];
+    
+                    for (int i = 0; i < columnCount; i++) {
+                        row[i] = rs.getObject(i + 1);
+                    }
+    
+                    tableModel.addRow(row);
+                }
+    
+                staffTable = new JTable(tableModel);
+                
+                // Commit the transaction
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback(); // Rollback transaction if an exception occurs
+                throw e; // Propagate the exception
             }
-
-            staffTable = new JTable(tableModel);
         } catch (SQLException e) {
             e.printStackTrace();
         }

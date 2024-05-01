@@ -15,28 +15,35 @@ public class Films {
     // Method to retrieve film data and return a DefaultTableModel
     public static DefaultTableModel getFilmTableModel() {
         DefaultTableModel tableModel = new DefaultTableModel();
-        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-            Statement statement = connection.createStatement()) {
-            // Prepare SQL query to retrieve film data
-            String query = "SELECT f.*, l.name AS language_name " +
-                    "FROM film f " +
-                    "JOIN language l ON f.language_id = l.language_id";
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
+            connection.setAutoCommit(false); // Start transaction
 
-            ResultSet rs = statement.executeQuery(query);
-            ResultSetMetaData metaData = rs.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            
-            for (int i = 1; i <= columnCount; i++) {
-                tableModel.addColumn(metaData.getColumnLabel(i));
-            }
-            
-            while (rs.next()) {
-                Object[] row = new Object[columnCount];
-                
-                for (int i = 0; i < columnCount; i++) {
-                    row[i] = rs.getObject(i + 1);
+            try (Statement statement = connection.createStatement()) {
+                // Prepare SQL query to retrieve film data
+                String query = "SELECT f.*, l.name AS language_name " +
+                        "FROM film f " +
+                        "JOIN language l ON f.language_id = l.language_id";
+
+                ResultSet rs = statement.executeQuery(query);
+                ResultSetMetaData metaData = rs.getMetaData();
+                int columnCount = metaData.getColumnCount();
+
+                for (int i = 1; i <= columnCount; i++) {
+                    tableModel.addColumn(metaData.getColumnLabel(i));
                 }
-                tableModel.addRow(row);
+
+                while (rs.next()) {
+                    Object[] row = new Object[columnCount];
+
+                    for (int i = 0; i < columnCount; i++) {
+                        row[i] = rs.getObject(i + 1);
+                    }
+                    tableModel.addRow(row);
+                }
+                connection.commit(); // Commit transaction
+            } catch (SQLException e) {
+                connection.rollback(); // Rollback transaction
+                throw e; 
             }
         } catch (SQLException e) {
             e.printStackTrace();

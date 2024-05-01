@@ -50,7 +50,9 @@ public class Notifications {
     // Method to populate the clients table
     private void populateClientsTable() {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD)) {
-            // SQL query to retrieve customer table data
+            connection.setAutoCommit(false); // transaction
+            
+            // Get customer table data
             String query = "SELECT c.customer_id, c.store_id, c.first_name, c.last_name, c.email, " +
                     "c.address_id, c.active, c.create_date, c.last_update " +
                     "FROM customer c";
@@ -85,11 +87,11 @@ public class Notifications {
             }
             // Set the table model
             clientsTable.setModel(tableModel);
+            connection.commit(); // Commit transaction
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 
 
     // Method to initialize buttons
