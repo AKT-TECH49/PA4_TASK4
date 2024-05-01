@@ -3,9 +3,9 @@ import javax.swing.table.DefaultTableModel;
 
 public class ReportGenerator {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Ihavepassed110!";
+    private static final String PASSWORD = "amantle29";
 
     public static DefaultTableModel generateReport() {
         DefaultTableModel tableModel = new DefaultTableModel();

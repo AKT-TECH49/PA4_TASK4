@@ -1,17 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class AddFilmPopup extends JDialog {
 
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3309/u23618583_u23539764_sakila";
+    // Database connection constants
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/u23618583_u23539764_sakila";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "Ihavepassed110!";
+    private static final String PASSWORD = "amantle29";
 
     private MainGUI owner;
 
+    // Components for adding a new film
     private JTextField titleField;
     private JTextArea descriptionArea;
     private JTextField releaseYearField;
@@ -23,6 +23,7 @@ public class AddFilmPopup extends JDialog {
     private JComboBox<String> ratingComboBox;
     private JTextField specialFeaturesField;
 
+
     public AddFilmPopup(MainGUI owner) {
         super(owner, "Add New Film", true);
         this.owner = owner;
@@ -32,6 +33,16 @@ public class AddFilmPopup extends JDialog {
         JPanel panel = new JPanel(new GridLayout(11, 2, 5, 5));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Initialize and add components to the panel
+        initializeComponents(panel);
+
+        add(panel);
+    }
+
+
+
+    // Method to initialize components
+    private void initializeComponents(JPanel panel) {
         // Add components to the panel
         panel.add(new JLabel("Title:"));
         titleField = new JTextField();
@@ -76,33 +87,27 @@ public class AddFilmPopup extends JDialog {
         specialFeaturesField = new JTextField();
         panel.add(specialFeaturesField);
 
-        // Add button to save film
+        // Add buttons to save or cancel film addition
         JButton saveButton = new JButton("Save");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveFilm();
-            }
-        });
+        saveButton.addActionListener(e -> saveFilm());
         panel.add(saveButton);
 
         JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose(); // Close the popup
-                owner.refreshFilmTable(); // Refresh film table
-            }
+        cancelButton.addActionListener(e -> {
+            dispose(); // Close the popup
+            owner.refreshFilmTable(); // Refresh film table
         });
         panel.add(cancelButton);
-
-        add(panel);
     }
 
+
+
+    // Method to populate language combo box
     private void populateLanguageComboBox() {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
-             Statement statement = connection.createStatement()) {
+            Statement statement = connection.createStatement()) {
             ResultSet resultSet = statement.executeQuery("SELECT name FROM language");
+            
             while (resultSet.next()) {
                 languageComboBox.addItem(resultSet.getString("name"));
             }
@@ -111,6 +116,9 @@ public class AddFilmPopup extends JDialog {
         }
     }
 
+
+
+    // Method to save film information to the database
     private void saveFilm() {
         try {
             // Retrieve data from fields
@@ -142,22 +150,10 @@ public class AddFilmPopup extends JDialog {
             }
             // Close the popup and refresh film table
             dispose();
-
             owner.refreshFilmTable();
-
-
         } catch (NumberFormatException | SQLException ex) {
-
             JOptionPane.showMessageDialog(this, "Error saving film. Please check your input and try again.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainGUI MainGUI = new MainGUI(); // Create an instance of MainGUI
-            AddFilmPopup popup = new AddFilmPopup(MainGUI); // Pass the instance of MainGUI as owner
-            popup.setVisible(true);
-        });
-    }
 }
