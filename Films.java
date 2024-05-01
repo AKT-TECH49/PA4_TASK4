@@ -10,8 +10,7 @@ public class Films {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "amantle29";
 
-
-
+    
     // Method to retrieve film data and return a DefaultTableModel
     public static DefaultTableModel getFilmTableModel() {
         DefaultTableModel tableModel = new DefaultTableModel();

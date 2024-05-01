@@ -9,7 +9,6 @@ public class Notifications {
     private static final String USERNAME = "root";
     private static final String PASSWORD = "amantle29";
 
-
     // Parent frame reference
     private MainGUI parentFrame;
 
@@ -19,7 +18,7 @@ public class Notifications {
     private JScrollPane scrollPane;
     private JPanel buttonsPanel;
 
-
+    
     // Constructor
     public Notifications(MainGUI parentFrame) {
         this.parentFrame = parentFrame;
